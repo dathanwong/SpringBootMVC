@@ -7,9 +7,11 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.dathanwong.mvc.models.Book;
@@ -50,5 +52,28 @@ public class BooksController {
 		Book book = bookService.findBook(id);
 		model.addAttribute("book", book);
 		return "/books/showBook.jsp";
+	}
+	
+	@RequestMapping("/books/{id}/edit")
+	public String edit(@PathVariable("id") Long id, Model model) {
+		Book book = bookService.findBook(id);
+		model.addAttribute("book", book);
+		return "/books/edit.jsp";
+	}
+	
+	@PutMapping("/books/{id}")
+	public String update(@Valid @ModelAttribute("book") Book book, BindingResult result) {
+		if(result.hasErrors()) {
+			return "/books/edit.jsp";
+		}else {
+			bookService.updateBook(book);
+			return "redirect:/books";
+		}
+	}
+	
+	@DeleteMapping("/books/{id}")
+	public String delete(@PathVariable("id") Long id) {
+		bookService.deleteBook(id);
+		return "redirect:/books";
 	}
 }
